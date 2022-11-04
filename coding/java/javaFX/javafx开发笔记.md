@@ -15,3 +15,17 @@ javafx开发笔记
       ```xml
       fx:controller="milk.chat.client.LoginController"
       ```
+1. 使用 [launch4j](http://launch4j.sourceforge.net/) 将 javaFX程序打包 exe
+    * 操作方式:
+        1. 配置输入jar和输出exe文件路径
+        
+            <img src="./img/launch4j_step_1.png" width="50%"/>            
+        1. 相关参数设置 分别对应如下:
+            1. 设置`launch4j`配置文件路径
+            1. 配置JDK路径
+            1. 配置JRE版本信息
+            1. 配置JVM启动参数 内容为:
+                
+                `--module-path "D:\Program Files\Java\javafx-sdk-11.0.2\lib" --add-modules javafx.controls,javafx.fxml`
+
+            <img src="./img/launch4j_step_2.png" width="50%"/>
