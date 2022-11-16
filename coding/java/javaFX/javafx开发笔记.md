@@ -5,6 +5,8 @@ javafx开发笔记
     [JavaFX jdk11以后的下载地址](https://openjfx.cn/dl/)
 
     [JavaFX 8 教程 （中文）](http://code.makery.ch/library/javafx-8-tutorial/zh-cn/)
+
+    [javafx and intellij 英文官方文档](https://openjfx.io/openjfx-docs/)
 1. [主题 themes](https://www.delftstack.com/howto/java/java-fx-themes/)
 
     * [jmetro](https://pixelduke.com/java-javafx-theme-jmetro/)
