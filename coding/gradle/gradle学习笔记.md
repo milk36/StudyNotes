@@ -1,5 +1,7 @@
 gradle学习笔记
 ---
+## 文档资料
+* [官方用户手册](https://docs.gradle.org/current/userguide/userguide.html)
 ## 版本特性
 ### Gralde 4.10 移除compile等
 * [找不到参数 Gradle 的方法 compile()](https://stackoverflow.com/questions/23796404/could-not-find-method-compile-for-arguments-gradle)
@@ -12,3 +14,5 @@ gradle学习笔记
 * `api`: 跟 2.x 版本的 `compile`完全相同
 * `implementation`: 使用了该命令编译的依赖，它仅仅对当前的`Module`提供接口
 * [官方文档 -- 用于声明依赖项的配置](https://docs.gradle.org/current/userguide/java_library_plugin.html#sec:java_library_configurations_graph)
+## 多项目构建
+* [创建多项目构建](https://docs.gradle.org/current/userguide/multi_project_builds.html)
