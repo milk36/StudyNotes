@@ -29,14 +29,14 @@
     git init
     git add README.md
     git commit -m "first commit"
-    git remote add origin http://119.29.18.237:3688/git/root/dubbo-samples.git
-    git push -u origin master
+    git remote add origin http://119.29.18.237:3688/git/root/dubbo-samples.git #添加远程仓库
+    git push -u origin master #推送到 origin 远程仓库 master分支
     ```
 
 1. 已有仓库关联
 
     ```shell
-    git remote add origin http://119.29.18.237:3688/git/root/dubbo-samples.git
+    git remote add origin http://119.29.18.237:3688/git/root/dubbo-samples.git #添加远程仓库
     git push -u origin master
     ```
 
@@ -44,7 +44,7 @@
 
 ### git clean 清理本地目录
 
-git clean 命令用来从你的工作目录中删除所有没有tracked过的文件。
+git clean 命令用来从你的工作目录中删除所有没有 `tracked` 过的文件。
 
 ```sh
 git clean -n #是一次clean的演习, 告诉你哪些文件会被删除. 记住他不会真正的删除文件, 只是一个提醒
