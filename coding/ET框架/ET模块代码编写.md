@@ -12,6 +12,7 @@
 ||普通消息|Actor|ActorLocation|
 |-|:-|-|-|
 |消息|单向发送:<br/>IMessage<br/>请求与响应:<br/>IRequest<br/>IResponse |单向发送:<br/>IActorMessage<br/>请求与响应:<br/>IActorRequest<br/>IActorResponse|单向发送:<br/>IActorLocationMessage<br/>请求与响应:<br/>IActorLocationRequest<br/>IActorLocationResponse|
+|用途|客户端与服务端对外节点的(Gate,Realm等)协议消息通信|服务器内网 Scene 之间协议消息通信|服务器内网 Unit (游戏实体)之间的协议消息通信|
 
 * 协议缩写含义
 

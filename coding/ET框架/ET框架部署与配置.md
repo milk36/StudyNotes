@@ -20,5 +20,3 @@
   <img src="./img/ET_Config_9.png" width=50%/>
 
   <img src="./img/ET_Config_10.png" width=50%/>
-
-### DB配置
