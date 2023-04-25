@@ -175,9 +175,24 @@ ET没有抛弃OOP，只是抛弃了继承跟多态，一旦使用继承跟多态
 
 使用示例:
 
+ET6 在父类上标记
+
 ```c#
 [ChildType] //这样Session可以添加任意类似的子实体
-public sealed class Session: Entity, IAwake<AService>, IDestroy
+public sealed class Session: Entity, IAwake<AService>, IDestroy{}
+
+[ChildType(typeof(子类型))] //这样Session可以添加任意类似的子实体
+public sealed class Session: Entity, IAwake<AService>, IDestroy{}
+```
+
+ET7 在子类上标记
+
+```c#
+[ChildOf]
+public class LockInfo: Entity, IAwake<long, CoroutineLock>, IDestroy{}
+
+[ChildOf(typeof(父类型))]
+public class LockInfo: Entity, IAwake<long, CoroutineLock>, IDestroy{}
 ```
 
 ### FriendClass 可直接访问对应实体组件的字段
