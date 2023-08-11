@@ -46,11 +46,37 @@ UnitDBSaveComponentSystem
 
 ## 背包
 
-### 背包系统(一)
+### 背包系统(一二三)
 
-`M2C_ItemUpdateOpInfo` 物品更新消息
+* `BagComponent` 背包组件
+  
+  `Item` 数据的存储逻辑:
 
-`BagComponent` 背包组件
+  1. `Item` 实现 `ISerializeToEntity` 接口
+  1. `Item` 以 `Entity.AddChild()` 的方式添加到 `BagComponent` 组件 `Children` 中
+  1. `BagComponent` 下的字段虽然都标记成 `[BsonIgnore]` , 但是 `Item` 回被作为 `Entity.childrenDB` 中的内容被保存到DB中
+  1. `BagComponent` 还实现了 `IDeserialize` 接口, 用于对反序列化操作, 其中会把 `Entity.childrenDB` 映射到相关`BagComponent`的业务字段中
+
+      ```c#
+      public class BagComponentDeserializeSystem: DeserializeSystem<BagComponent>
+      {
+          public override void Deserialize(BagComponent self)
+          {
+              foreach (Entity entity in self.Children.Values)
+              {
+                  self.AddContainer(entity as Item);
+              }
+          }
+      }
+      ```
+
+* `Item` 物品实体
+  1. `M2C_ItemUpdateOpInfo` 更新单个物品消息  
+     1. `ItemHelper.RandomQuality` 随机生成物品品质
+     2. `ItemUpdateNoticeHelper.SyncAddItem` 通知 `Client` 添加物品消息 -> `M2C_ItemUpdateOpInfo`
+  2. `M2C_AllItemsList` 同步所以道具信息
+     1. `ItemUpdateNoticeHelper.SyncAllBagItems` 同步全部背包物品信息
+     2. `ItemUpdateNoticeHelper.SyncAllEquipItems` 同步全部角色装备信息
 
 ## Actor消息的转发
 
