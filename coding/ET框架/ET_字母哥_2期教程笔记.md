@@ -193,6 +193,62 @@ UnitDBSaveComponentSystem
 
   `ChangeEquipItemEvent_ChangeNumeric` 对应事件监听,处理玩家 穿戴/卸下装备 后属性的变化
 
+## 打造系统
+
+* `C2M_StartProduction` 开始打造协议
+* `C2M_ReceiveProduction` 领取打造好的物品
+* `M2C_AllProductionList` 主动推送所有打造物品信息
+
+### 打造系统前端
+
+* `ForgeComponent` 打造组件
+  
+  ```c#
+  //生成信息id vs 定时器id
+  public Dictionary<long, long> ProductionTimerDict = new Dictionary<long, long>();
+  //生产队列
+  public List<Production> ProductionsList = new List<Production>();
+  ```
+
+* `Production` 打造信息
+  
+  ```c#
+  public long StartTime       = 0;
+  public long TargetTime      = 0;
+  public int  ConfigId        = 0;
+  public int  ProductionState = 0;
+  ```
+
+* `DlgForgeSystem` UI逻辑
+* `Unity.ForgeHelper.StartProduction` 前端发起打造物品
+* `MakeQueueOver` 抛出打造事件,用于现实红点信息
+
+  `Unity.ForgeComponentSystem.IsExistMakeQueueOver` 用于判断是否拥有已经打造完的物品(显示红点)
+* `DlgForgeSystem.RefreshMakeQueue` 每秒刷新一次ui状态,直到打造完成
+* `Unity.ProductionSystem.GetRemainTimeValue` 计算打造物品的剩余进度条
+* `Unity.ProductionSystem.GetRemainingTimeStr` 计算打造物品的剩余时间
+* `ES_MakeQueueSystem.Refresh` 生成队列的刷新逻辑
+* `ForgeHelper.ReceivedProductionItem` 领取打造好的物品
+
+### 打造系统后端
+
+* `ProductionState` 打造状态
+  
+  ```c#
+  public enum ProductionState
+  {
+      Received    = 0, //已领取
+      Making     = 1, //正在制造
+  }
+  ```
+
+* `Server.ForgeComponentSystem.StartProduction` 后端开始打造物品
+
+  填充 `Production` 打造数据
+* `C2M_ReceiveProductionHandler`  领取打造好的物品
+* `MakeProdutionOver` 打造完成事件
+* `Server.ForgeHelper.SyncAllProduction` 主动下发所有打造信息
+
 ## Actor消息的转发
 
 ET6中的 `SessionStreamDispatcherServerInner` 逻辑对应到 ET7的 `ActorHandleHelper`

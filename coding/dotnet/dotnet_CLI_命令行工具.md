@@ -26,3 +26,11 @@ dotnet tool install --global dotnet-counters
 ### dotnet-counters collect
 
 定期收集所选计数器的值，并将它们导出为指定的文件格式以进行后续处理
+
+### dotnet-counters monitor
+
+开启监视器 观察对应进程的计数器状态(堆栈情况)
+
+以 3 秒的刷新间隔监视 System.Runtime 中的所有计数器:
+
+`dotnet-counters monitor --process-id xxx  --refresh-interval 3 --counters System.Runtime`
