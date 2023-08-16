@@ -1,4 +1,36 @@
+<!-- markdownlint-disable MD033 -->
+<!-- markdownlint-disable MD024 -->
 # ET_字母哥_2期教程笔记
+
+## 服务器结构
+
+<img src="./img/ET_ChatServer_1.png" width="50%" />
+
+## 顶号/二次登录状态处理
+
+* `C2G_EnterGameHandler` 用 `player.InstanceId` 替换了 `session.InstanceId`
+
+  ```c#
+  //unit.AddComponent<UnitGateComponent, long>(session.InstanceId);
+  unit.AddComponent<UnitGateComponent, long>(player.InstanceId);
+  ```
+
+* `SessionPlayerComponent.isLoginAgain` 顶号/二次登录状态
+* `L2G_DisconnectGateUnitHandler`
+
+  ```c#
+  Session gateSession = player.ClientSession; //用于保存原有的 gateSession
+  if ( gateSession!= null && !gateSession.IsDisposed)
+  {
+      if (gateSession.GetComponent<SessionPlayerComponent>() != null)
+      {
+          gateSession.GetComponent<SessionPlayerComponent>().isLoginAgain = true;// 顶号/二次登录状态
+      }
+      
+      gateSession.Send(new A2C_Disconnect() { Error = ErrorCode.ERR_OtherAccountLogin});
+      gateSession?.Disconnect().Coroutine();
+  }
+  ```
 
 ## 角色数值属性
 
@@ -249,12 +281,222 @@ UnitDBSaveComponentSystem
 * `MakeProdutionOver` 打造完成事件
 * `Server.ForgeHelper.SyncAllProduction` 主动下发所有打造信息
 
+## 任务系统
+
+### 前端
+
+* `TasksComponent`
+  
+  ```c#
+  public SortedDictionary<int,TaskInfo> TaskInfoDict = new SortedDictionary<int, TaskInfo>();
+
+  public List<TaskInfo> TaskInfoList = new List<TaskInfo>(); //进行中的任务列表
+  ```
+
+* `TaskInfo`
+
+  ```c#
+  public int ConfigId    = 0;
+
+  public int TaskState   = 0; //任务状态
+
+  public int TaskPogress = 0; //任务进度
+  ```
+
+* `TaskHelper.GetTaskReward` 领取任务奖励
+
+### 后端
+
+* `TaskComponent`
+  
+  ```c#
+  //任务列表数据(包含已完成任务数据)
+  public SortedDictionary<int,TaskInfo> TaskInfoDict = new SortedDictionary<int, TaskInfo>();
+  //进行中的任务
+  public HashSet<int> CurrentTaskSet = new HashSet<int>();
+  public M2C_UpdateTaskInfo M2CUpdateTaskInfo = new M2C_UpdateTaskInfo();
+  ```
+
+* `Server.TasksComponentSystem.TriggerTaskAction` 触发任务行为
+
+  ```c#
+  public enum TaskActionType
+  {
+      UpLevel      = 1, //升级
+      MakeItem     = 2, //打造物品
+      Adverture    = 3, //冒险通关
+  }
+
+  //相关调用逻辑
+  unit.GetComponent<TasksComponent>().TriggerTaskAction(TaskActionType.UpLevel,(int)args.New);
+  args.Unit.GetComponent<TasksComponent>().TriggerTaskAction(TaskActionType.MakeItem,count:1,targetId : args.ProductionConfigId);
+  args.Unit.GetComponent<TasksComponent>().TriggerTaskAction(TaskActionType.Adverture,count:1, targetId : args.LevelId);
+  ```
+
+* 任务配置表说明
+  
+  |任务目标Id|
+  |-|
+  |TaskTargetId|
+  |int|
+  |用于匹配 物品id/关卡id 等对应的目标条件配置|
+
+## 排行榜
+
+### 前端
+
+### Gate
+
+### Rank
+
+## 聊天系统
+
+* `Chat2C_SendChatInfo` 发送聊天消息
+  
+  ```c#
+  //ResponseType Chat2C_SendChatInfo
+  message C2Chat_SendChatInfo // IActorChatInfoRequest
+  {
+    int32 RpcId         = 1;
+    string ChatMessage  = 2;
+  }
+  ```
+
+* `Chat2G_EnterChat` 进入聊天服(服务端内网协议)
+  
+  ```c#
+  //ResponseType Chat2G_EnterChat
+  message G2Chat_EnterChat // IActorRequest
+  {
+      int32 RpcId = 90;
+    string Name  = 1;
+    int64 UnitId = 2;
+    int64 GateSessionActorId = 3;
+    
+  }
+  ```
+
+* `G2Chat_RequestExitChat` 离开聊天服(服务端内网协议)
+  
+  ```c#
+  //ResponseType Chat2G_RequestExitChat
+  message G2Chat_RequestExitChat // IActorRequest
+  {
+      int32 RpcId = 90;
+  }
+  ```
+
+* `Chat2C_NoticeChatInfo` 广播聊天信息
+  
+  ```c#
+  message Chat2C_NoticeChatInfo // IActorMessage
+  {
+    string Name = 1;
+    string ChatMessage = 2;
+  }
+  ```
+
+### 前端
+
+* `ChatHelper.SendMessage` 发送聊天信息
+* `Chat2C_NoticeChatInfoHandler` 处理接收到的聊天信息
+* `UpdateChatInfo` 更新聊天信息事件
+* `DlgChatSystem.Refresh` 刷新聊天UI信息
+
+### Gate
+
+* `ChatInfoUnitsComponent` 聊天组件
+* `C2G_EnterGameHandler.EnterWorldChatServer` 玩家进入聊天服
+
+### ChatInfo
+
+* `G2Chat_EnterChatHandler` 登录聊天服逻辑
+* `C2Chat_SendChatInfoHandler` 处理聊天逻辑;并广播聊天消息
+* `ChatInfoUnitsComponent` 聊天服组件, 管理所有聊天服玩家信息
+
+  ```c#
+  public class ChatInfoUnitsComponent : Entity,IAwake,IDestroy
+  {
+      public  Dictionary<long, ChatInfoUnit> ChatInfoUnitsDict = new Dictionary<long, ChatInfoUnit>();
+  }
+  ```
+
+* `ChatInfoUnit` 聊天服Unit信息
+
+  ```c#
+  public class ChatInfoUnit : Entity,IAwake,IDestroy
+  {
+      public long GateSessionActorId;//用于聊天消息的广播
+      public string Name;
+  }
+  ```
+
+* `G2Chat_RequestExitChatHandler` 玩家离线退出聊天服逻辑
+
+  `DisconnectHelper.KickPlayer` 由玩家离线逻辑触发
+
+  ```c#
+  //通知聊天服下线聊天Unit
+  var chat2GRequestExitChat = (Chat2G_RequestExitChat)await MessageHelper.CallActor(player.ChatInfoInstanceId,new G2Chat_RequestExitChat());
+  ```
+
+### IActorChatInfoRequest
+
+* `C->ChatInfo` 的过程
+* `SessionStreamDispatcherServerOuter.DispatchAsync` 添加 `IActorChatInfoRequest` 和 `IActorChatInfoMessage` 的协议分发逻辑
+  
+  ```c#
+  case IActorChatInfoRequest actorChatInfoRequest:
+  {
+      xxx
+      int rpcId          = actorChatInfoRequest.RpcId; // 这里要保存客户端的rpcId
+      long instanceId    = session.InstanceId;
+      IResponse response = await ActorMessageSenderComponent.Instance.Call(player.ChatInfoInstanceId, actorChatInfoRequest);
+      response.RpcId     = rpcId;
+      // session可能已经断开了，所以这里需要判断
+      if (session.InstanceId == instanceId)
+      {
+          session.Reply(response);
+      }
+      break;
+  }
+  case IActorChatInfoMessage actorChatInfoMessage:
+  {
+      Player player = Game.EventSystem.Get(session.GetComponent<SessionPlayerComponent>().PlayerInstanceId) as Player;
+      if (player == null || player.IsDisposed || player.ChatInfoInstanceId == 0)
+      {
+          break;
+      }                    
+      ActorMessageSenderComponent.Instance.Send(player.ChatInfoInstanceId, actorChatInfoMessage);
+      break;
+  }
+  ```
+
+> 排行榜是基于进程级别的协议转发;而聊天逻辑是基于 玩家`Entity` 级别的协议转发
+
 ## Actor消息的转发
 
-ET6中的 `SessionStreamDispatcherServerInner` 逻辑对应到 ET7的 `ActorHandleHelper`
+* ET6中的 `SessionStreamDispatcherServerInner` 逻辑对应到 ET7的 `ActorHandleHelper`
+* ET6中的 `SessionStreamDispatcherServerOuter`对应 ET7的 `NetServerComponentOnReadEvent`
 
 ## 设计范式
 
 ### Unit不要挂继承ISerializeToEntity的组件
 
 [Unit不要挂孩子，Unit上的组件才能挂孩子](https://et-framework.cn/d/448-20cnyiserializetoentity)
+
+
+case MailboxType.PlayerSession:
+  if (entity is Player player)
+  {
+    if (player.IsDisposed)
+      {
+          return;
+      }
+      if (player.ClientSession == null || player.ClientSession.IsDisposed)
+      {
+          return;
+      }
+      player.ClientSession.Send(iActorMessage);
+  }
+  break; 
