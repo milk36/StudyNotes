@@ -283,6 +283,39 @@ UnitDBSaveComponentSystem
 
 ## 任务系统
 
+* `M2C_UpdateTaskInfo` 更新任务数据
+
+  ```pb
+  message TaskInfoProto
+  {
+    int32 ConfigId  = 1;
+
+    int32 TaskState = 2;
+
+    int32 TaskPogress = 3;
+  }
+
+  message M2C_UpdateTaskInfo // IActorMessage
+  {
+    TaskInfoProto TaskInfoProto = 1;
+  }
+  message M2C_AllTaskInfoList // IActorMessage
+  {
+    repeated TaskInfoProto TaskInfoProtoList = 1;
+  }
+  ```
+
+* `C2M_ReceiveTaskReward` 领取任务奖励
+
+  ```c#
+  //ResponseType M2C_ReceiveTaskReward
+  message C2M_ReceiveTaskReward // IActorLocationRequest
+  {
+    int32 RpcId        = 1;
+    int32 TaskConfigId = 2;
+  }
+  ```
+
 ### 前端
 
 * `TasksComponent`
@@ -293,16 +326,7 @@ UnitDBSaveComponentSystem
   public List<TaskInfo> TaskInfoList = new List<TaskInfo>(); //进行中的任务列表
   ```
 
-* `TaskInfo`
-
-  ```c#
-  public int ConfigId    = 0;
-
-  public int TaskState   = 0; //任务状态
-
-  public int TaskPogress = 0; //任务进度
-  ```
-
+* `UpdateTaskInfoEvent_ShowRedDot` 任务红点逻辑
 * `TaskHelper.GetTaskReward` 领取任务奖励
 
 ### 后端
@@ -310,12 +334,48 @@ UnitDBSaveComponentSystem
 * `TaskComponent`
   
   ```c#
-  //任务列表数据(包含已完成任务数据)
+  //任务列表数据(包含已完成任务数据) 有序字典
   public SortedDictionary<int,TaskInfo> TaskInfoDict = new SortedDictionary<int, TaskInfo>();
-  //进行中的任务
+  //进行中的任务列表
   public HashSet<int> CurrentTaskSet = new HashSet<int>();
   public M2C_UpdateTaskInfo M2CUpdateTaskInfo = new M2C_UpdateTaskInfo();
   ```
+  
+* `TasksComponentSystem.UpdateAfterTaskInfo` 更新后续任务信息
+  
+  任务状态
+
+  ```c#
+  public enum TaskState
+  {
+      None       = -1,
+      Doing      = 0,  //正在进行的状态
+      Complete   = 1,  //任务完成的状态
+      Received   = 2,  //已领取奖励的状态
+  }
+  ```
+
+* `TasksComponentSystem.GetTaskInitProgressCount` 初始化任务进度
+* `TasksComponentSystem.AddOrUpdateTaskInfo` 添加/更新任务进度信息
+
+  `TaskInfoSystem.UpdateProgress` 更新任务进度
+  
+  任务进度逻辑类型;对应配置表 `TaskActionConfig`
+
+  ```c#
+  public enum TaskProgressType
+  {
+      Add          = 1, //增加
+      Sub          = 2, //减少
+      Update       = 3, //赋值
+  }
+  ```
+
+  `TaskInfoSystem.TryCompleteTask` 判断任务进度是否完成
+
+  `TaskNoticeHelper.SyncTaskInfo` 同步单个任务信息到前端
+
+  `TaskNoticeHelper.SyncAllTaskInfo` 同步全部任务信息到前端
 
 * `Server.TasksComponentSystem.TriggerTaskAction` 触发任务行为
 
@@ -326,13 +386,26 @@ UnitDBSaveComponentSystem
       MakeItem     = 2, //打造物品
       Adverture    = 3, //冒险通关
   }
+  ```
+  
+  触发任务更新的相关事件:
 
+  `BattleWinEvent_TaskUpdate` 战斗胜利
+  
+  `MakeProdutionOverEvent_TaskUpdate` 打造完成
+  
+  `NumericWatcher_UpLevel` 玩家升级
+  
+  ```c#
   //相关调用逻辑
   unit.GetComponent<TasksComponent>().TriggerTaskAction(TaskActionType.UpLevel,(int)args.New);
   args.Unit.GetComponent<TasksComponent>().TriggerTaskAction(TaskActionType.MakeItem,count:1,targetId : args.ProductionConfigId);
   args.Unit.GetComponent<TasksComponent>().TriggerTaskAction(TaskActionType.Adverture,count:1, targetId : args.LevelId);
   ```
 
+* `TaskNoticeHelper.SyncTaskInfo` 同步任务信息
+* `Server.TasksComponentSystem.TryReceiveTaskReward` 领奖任务条件判断
+* `Server.TasksComponentSystem.ReceiveTaskRewardState` 领取任务奖励
 * 任务配置表说明
   
   |任务目标Id|
@@ -340,6 +413,23 @@ UnitDBSaveComponentSystem
   |TaskTargetId|
   |int|
   |用于匹配 物品id/关卡id 等对应的目标条件配置|
+* `TaskConfigCategory` 处理任务配置表前置任务列表
+  
+  `TaskConfigCategory.BeforeTaskConfigDictionary` 前置任务关联列表: `<前置任务ID:后置任务List>`
+
+  `TaskConfigCategory.GetAfterTaskIdListByBeforeId` 获取对应的前置任务列表
+
+### 共享
+
+* `TaskInfo`
+
+  ```c#
+  public int ConfigId    = 0;
+
+  public int TaskState   = 0; //任务状态
+
+  public int TaskPogress = 0; //任务进度
+  ```
 
 ## 排行榜
 
