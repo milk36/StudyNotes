@@ -433,11 +433,98 @@ UnitDBSaveComponentSystem
 
 ## 排行榜
 
+* 排行榜协议 `IActorRankInfoRequest`
+  
+  ```c#
+  message RankInfoProto
+  {
+    int64 Id      = 1;
+    int64 UnitId  = 2;
+    string Name   = 4;
+    int32  Count  = 5;
+  }
+  //ResponseType Rank2C_GetRanksInfo
+  message C2Rank_GetRanksInfo // IActorRankInfoRequest
+  {
+    int32 RpcId        = 1;
+  }
+  message Rank2C_GetRanksInfo // IActorRankInfoResponse
+  {
+    int32 RpcId    = 90;
+    int32 Error    = 91;
+    string Message = 92;
+    repeated RankInfoProto RankInfoProtoList = 1;
+  }
+  ```
+
+* `Map2Rank_AddOrUpdateRankInfo` 更新排行榜数据
+
+  ```c#
+  message Map2Rank_AddOrUpdateRankInfo //IActorMessage
+  {
+    int32 RpcId = 90;
+    RankInfo RankInfo = 1;
+  }
+  ```
+
 ### 前端
+
+* `RankHelper.GetRankInfo` 获取排行榜数据
 
 ### Gate
 
+* `SessionStreamDispatcherServerOuter.DispatchAsync`
+
+  分发排行榜节点消息
+
+  ```c#
+  case IActorRankInfoRequest actorRankInfoRequest:
+  {
+      //拿到 Rank 节点信息
+      long rankInstanceId = StartSceneConfigCategory.Instance.GetBySceneName(session.DomainZone(), "Rank").InstanceId;
+      int rpcId           = actorRankInfoRequest.RpcId;
+      long instanceId     = session.InstanceId;
+      IResponse response  = await ActorMessageSenderComponent.Instance.Call(rankInstanceId, actorRankInfoRequest);
+      response.RpcId = rpcId;
+      // session可能已经断开了，所以这里需要判断
+      if (session.InstanceId == instanceId)
+      {
+          session.Reply(response);
+      }
+      break;
+  }
+  ```
+
+### Map
+
+* `RankHelper.AddOrUpdateLevelRank` 向 Rank 节点发送更新排行榜数据信息
+
 ### Rank
+
+* `RankInfosComponentSystem.LoadRankInfo` 从数据库加载出排行榜数据
+* `C2Rank_GetRanksInfoHandler` 排行榜协议逻辑
+* `RankInfosComponent` 排行榜信息
+  
+  ```c#
+  //排行榜有序队列
+  [BsonIgnore]
+  public SortedList<RankInfo, long> SortedRankInfoList  = new SortedList<RankInfo, long>(new RankInfoCompare());
+  [BsonIgnore]
+  public Dictionary<long, RankInfo> RankInfosDictionary = new Dictionary<long, RankInfo>();
+
+  //排行榜排序规则
+  public class RankInfoCompare : IComparer<RankInfo>
+  {
+    xxxx
+  }
+  ```
+
+* `Map2Rank_AddOrUpdateRankInfoHandler` 服务器节点直接更新排行榜数据
+* `RankInfosComponentSystem.AddOrUpdate` 更新排行榜数据
+
+### 共享
+
+* `RankInfo` 排行榜信息
 
 ## 聊天系统
 
