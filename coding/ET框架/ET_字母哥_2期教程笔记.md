@@ -653,7 +653,7 @@ UnitDBSaveComponentSystem
 
 ## Actor消息的转发
 
-* ET6中的 `SessionStreamDispatcherServerInner` 逻辑对应到 ET7的 `ActorHandleHelper`
+* ET6中的 `SessionStreamDispatcherServerInner` 逻辑对应到 ET7的 `NetInnerComponentOnReadEvent` -> `ActorHandleHelper`
 * ET6中的 `SessionStreamDispatcherServerOuter`对应 ET7的 `NetServerComponentOnReadEvent`
 
 ## 设计范式
