@@ -41,6 +41,8 @@
 
 ## 热重载
 
+添加启动参数:`--Console=1`, 使用 R 指令
+
 ### ET7 C2R_ReLoadDllHandler
 
 ```c#
