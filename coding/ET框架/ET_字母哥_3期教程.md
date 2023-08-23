@@ -41,9 +41,10 @@
 
 ## 热重载
 
-添加启动参数:`--Console=1`, 使用 R 指令
+* 重载Hotfix代码;添加启动参数:`--Console=1`, 使用 R 指令
+* 重载配置表;添加启动参数:`--Console=1`, 使用 C 配置表名: `C UnitConfig`
 
-### ET7 C2R_ReLoadDllHandler
+### ET7 C2R_ReLoadDllHandler  Hotfix 代码
 
 ```c#
 xxx Run()
@@ -52,4 +53,41 @@ xxx Run()
   CodeLoader.Instance.LoadHotfix();                    
   EventSystem.Instance.Load();
 }
+```
+
+### ReloadConfigConsoleHandler 热重载配置表
+
+配置表数据直接热重载无需调用 `await Game.WaitFrameFinish();`
+
+直接使用`ConfigComponent.Instance.Load();` 即可重载所有配置数据
+
+## Robot
+
+### 测试用例
+
+用于测试网络消息
+
+ET6 需要独立启动Robot进程,启动参数: `--Process=2 --Console=1`
+
+ET7 可以在同一个进程中启动Robot,启动参数: `--Console=1`
+
+命令行
+
+```sh
+> Robot 
+> Run 1 #测试单个用例
+> RunAll #测试全部用例
+```
+
+* `RobotConsoleHandler` 解析机器人启动命令
+
+### 机器人
+
+* `CreateRobotConsoleHandler`
+
+启动机器人逻辑,命令行
+
+```sh
+> CreateRobot --Num 10
+> CreateRobot --Num=10
 ```
