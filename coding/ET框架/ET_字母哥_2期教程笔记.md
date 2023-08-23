@@ -661,19 +661,3 @@ UnitDBSaveComponentSystem
 ### Unit不要挂继承ISerializeToEntity的组件
 
 [Unit不要挂孩子，Unit上的组件才能挂孩子](https://et-framework.cn/d/448-20cnyiserializetoentity)
-
-
-case MailboxType.PlayerSession:
-  if (entity is Player player)
-  {
-    if (player.IsDisposed)
-      {
-          return;
-      }
-      if (player.ClientSession == null || player.ClientSession.IsDisposed)
-      {
-          return;
-      }
-      player.ClientSession.Send(iActorMessage);
-  }
-  break; 
