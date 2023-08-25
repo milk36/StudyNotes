@@ -91,3 +91,70 @@ ET7 可以在同一个进程中启动Robot,启动参数: `--Console=1`
 > CreateRobot --Num 10
 > CreateRobot --Num=10
 ```
+
+* AI 配置 `AIConfig`
+  
+  1. `AIComponent` AI组件
+  1. `AI_XunLuo` 寻路
+  1. `AI_Attack` 攻击
+
+## 性能调试
+
+关注指标:
+
+  1. CPU
+  1. 内存
+  1. IO(文件/网络/DB)
+
+### Stopwatch 统计执行时间
+
+```c#
+Stopwatch stopWatch = new Stopwatch();
+stopWatch.Start();
+Thread.Sleep(10000);
+stopWatch.Stop();
+
+TimeSpan ts = stopWatch.Elapsed;
+
+// Format and display the TimeSpan value.
+string elapsedTime = String.Format("{0:00}:{1:00}:{2:00}.{3:00}",
+    ts.Hours, ts.Minutes, ts.Seconds,
+    ts.Milliseconds / 10);
+Console.WriteLine("RunTime " + elapsedTime);//输出执行时间
+```
+
+### 相关工具
+
+* JetBrains dotTrace
+  
+  [dotTrace 激活/使用教程](https://www.cnblogs.com/chonglu/p/17013652.html)
+* JetBrains dotMemory
+
+### dotnet CLI 工具适合生产环境使用
+
+* `dotnet-counters`
+
+  1. `dotnet-counters ps` 打印相关的 dotnet 进程信息
+  1. `dotnet-counters monitor` 监视器
+
+      以 3 秒的刷新间隔监视 System.Runtime 中的所有计数器:
+
+      `dotnet-counters monitor --process-id xxx  --refresh-interval 3 --counters System.Runtime`
+
+      [打印输出示例](https://learn.microsoft.com/zh-cn/dotnet/core/diagnostics/dotnet-counters#examples-1)
+* [`dotnet-dump` 内存dump](https://learn.microsoft.com/zh-cn/dotnet/core/diagnostics/dotnet-dump)
+
+    1. 获取转存文件 `dotnet-dump collect -p <PID> -o <output_dump_path>`
+    1. 分析转存文件 `dotnet-dump analyze <dump_path>`
+    1. 可用 `JetBrains dotMemory` 对文件进行分析
+    1. [如何在.NET程序崩溃时自动创建Dump](https://www.cnblogs.com/InCerry/p/how_to_automic_create_dump_when_app_crash.html)
+
+        [在发生故障时收集转储](https://learn.microsoft.com/zh-cn/dotnet/core/diagnostics/collect-dumps-crash)
+* [`dotnet-gcdump` 针对GC 进行dump](https://learn.microsoft.com/zh-cn/dotnet/core/diagnostics/dotnet-gcdump)
+
+  [dotnet-gcdump 配合Perfview的使用](https://youtu.be/FchQ2GUx5lY)
+
+  [PerfView github](https://github.com/microsoft/perfview)
+* [`dotnet-trace` 性能分析实用工具](https://learn.microsoft.com/zh-cn/dotnet/core/diagnostics/dotnet-trace)
+  
+  1. 可用 `JetBrains dotTrace` 对文件进行分析
