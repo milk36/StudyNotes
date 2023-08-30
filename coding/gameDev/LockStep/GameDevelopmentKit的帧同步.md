@@ -1,3 +1,4 @@
+<!-- markdownlint-disable MD024 -->
 # GameDevelopmentKit 中的帧同步笔记
 
 * [GameDevelopmentKit](https://github.com/XuToWei/GameDevelopmentKit)
@@ -17,6 +18,14 @@
   ```
 
 ## 帧同步服务端
+
+### 匹配
+
+* `LSConstValue.MatchCount` 匹配成功人数
+* `C2G_MatchHandler` -> `G2Match_MatchHandler` -> `MatchComponentSystem.Match` 匹配创建房间逻辑
+
+  -> `Match2Map_GetRoomHandler` Map创建匹配房间; Room运行在Map节点里
+* `Match2G_NotifyMatchSuccess` 匹配成功，通知客户端切换场景
 
 ### 战斗房间业务
 
@@ -53,3 +62,18 @@
       room.Update(oneFrameInputs);//继续驱动 update
   }
   ```
+
+## 客户端
+
+### 战斗房间业务
+
+* `Match2G_NotifyMatchSuccessHandler` 通知匹配成功协议逻辑
+* `OneFrameInputsHandler` 处理接收到服务端推送的帧数据
+
+### UI
+
+* `LSOperaComponentUpdateSystem` 监听键盘输入
+
+## 导出数据
+
+* 配置表json导出目录:`Unity\Assets\Res\Editor\ET\Luban`
