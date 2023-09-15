@@ -9,6 +9,14 @@
 
 `dotnet --list-sdks`
 
+### [global.json](https://learn.microsoft.com/zh-cn/dotnet/core/tools/global-json)
+
+[设置sdk版本](https://learn.microsoft.com/zh-cn/dotnet/core/tools/global-json#globaljson-and-the-net-cli)
+
+```sh
+dotnet new globaljson --sdk-version 6.0.100
+```
+
 ## dotnet-counters
 
 [dotnet-counters 官方文档](https://learn.microsoft.com/zh-cn/dotnet/core/diagnostics/dotnet-counters)

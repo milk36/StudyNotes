@@ -40,6 +40,13 @@
     git push -u origin master
     ```
 
+1. 修改远程仓库地址
+
+    ```sh
+    git remote rm origin
+    git remote add origin [url]
+    ```
+
 ## 远程覆盖本地git仓库
 
 ### git clean 清理本地目录
