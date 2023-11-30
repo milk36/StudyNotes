@@ -40,6 +40,28 @@
 1. 数值更新协议: `M2C_NoticeUnitNumeric`
 1. `UnitFactory.Create` 创建Unit时如果类型为 `Player` 将初始化添加 `PlayerNumericConfig` 配置表中的数值属性
 
+### 数值组件与红点系统的关系
+
+* 服务端触发数值更新事件
+
+  ```c#
+  ET.NumericComponentSystem.Insert ->   
+    Game.EventSystem.PublishClass(args)
+  -> ET.NumericChangeEvent_NoticeToClient //监听 EventType.NumbericChange 事件
+  -> ET.NumericNoticeComponentSystem.NoticeImmediately //发送数值更新协议到客户端
+  ```
+
+* 客户端接收数值更新事件
+
+  ```c#
+  ET.M2C_NoticeUnitNumericHandler ->
+    NumericComponent.Set(message.NumericType, message.NewValue)
+  ->  ET.NumericComponentSystem.Insert //客户端收到数值更新协议依然触发的是数值组件 EventType.NumbericChange 事件
+  -> ET.NumericChangeEventAsyncNotifyWatcher: AEventClass<EventType.NumbericChange> //EventType.NumbericChange 事件监听
+  -> ET.NumericWatcherComponent.Run() //数值观察器
+  -> ET.NumericWatcher_AddExp //对应的观察器实现如红点业务等逻辑
+  ```
+
 ### 数据定时回写组件逻辑
 
 UnitDBSaveComponentSystem
@@ -64,7 +86,7 @@ UnitDBSaveComponentSystem
 
   `AdventureCheckComponentSystem.SimulationBattle` 服务端战斗结果模拟
 
-  `SRandom` 伪随机逻辑(线性同余)
+  `SRandom` 伪随机逻辑(线性同余) --放置闯关系统(七)
 
 * 红点系统(血条飘血) -- 放置闯关系统(六)
   
@@ -74,7 +96,7 @@ UnitDBSaveComponentSystem
 
   `AfterCreateZoneScene_AddComponent` 处理战斗场景创建添加相关组件
 
-  `RedDotHelper` 红点帮助类
+  `RedDotHelper` 红点帮助类 -- 放置闯关系统(八 15:00) 通过`ET.NumericWatcher_AddExp`调用触发  
 
 ## 背包
 
