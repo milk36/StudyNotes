@@ -519,10 +519,13 @@ UnitDBSaveComponentSystem
 
 ### Map
 
-* `RankHelper.AddOrUpdateLevelRank` 向 Rank 节点发送更新排行榜数据信息
+* `NumericWatcher_UpLevel` 玩家升级事件触发更新排行榜数据
+* `RankHelper.AddOrUpdateLevelRank` 向 Rank 节点推送更新排行榜数据信息
 
 ### Rank
 
+* `Map2Rank_AddOrUpdateRankInfoHandler` Rank节点接受Map节点推送的排行榜数据
+* `RankInfosComponentSystem.AddOrUpdate` Rank更新排行榜数据
 * `RankInfosComponentSystem.LoadRankInfo` 从数据库加载出排行榜数据
 * `C2Rank_GetRanksInfoHandler` 排行榜协议逻辑
 * `RankInfosComponent` 排行榜信息
@@ -541,8 +544,6 @@ UnitDBSaveComponentSystem
   }
   ```
 
-* `Map2Rank_AddOrUpdateRankInfoHandler` 服务器节点直接更新排行榜数据
-* `RankInfosComponentSystem.AddOrUpdate` 更新排行榜数据
 
 ### 共享
 
