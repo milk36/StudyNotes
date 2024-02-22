@@ -4,6 +4,7 @@
 ## 部署流程
 
 ubuntu 22.04 LTS
+
 ```sh
 sudo apt install -y protobuf-compiler protobuf-c-compiler libreadline-dev autoconf git subversion telnet netcat libcurl4-openssl-dev libssl-dev gawk
 sudo apt install build-essential
