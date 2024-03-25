@@ -12,6 +12,7 @@
 ## idea 配置
 
 - [ideavim-github](https://github.com/JetBrains/ideavim)
+  - [ideavim 共享配置参考](https://github.com/JetBrains/ideavim/discussions/303)
 - [参考配置方案](https://cloud.tencent.com/developer/article/2158218)
   - `:actionlist` 查看 Idea 所有快捷键对应的指令
   - [actionlist 文档](https://gist.github.com/matt-snider/3b51f1c56b55324e6c05ec3d93ca4679)
@@ -197,15 +198,18 @@
 - [参考](https://blog.csdn.net/Leivzy/article/details/132001375)
 
   ```vim
-  " " =============================================
+  " =============================================
   " 插件
   " =============================================
 
-  "Plug 'preservim/nerdtree'
+  Plug 'preservim/nerdtree'
 
   " =============================================
   " 基础配置
   " =============================================
+
+  " 设置字体
+  set guifont = Intel\ One\ Mono\ Light:h12
 
   "--将搜索匹配的文本高亮显示
   set hlsearch
@@ -220,13 +224,13 @@
   set showmode
 
   "--当前行的绝对行号
-  "set number
+  set number
 
   "--设置相对行号
   set relativenumber
 
   "设置在光标距离窗口顶部或底部一定行数时，开始滚动屏幕内容的行为
-  set scrolloff=10
+  set scrolloff=3
   set history=100000
 
   " 系统剪贴板
@@ -241,13 +245,14 @@
 
   " 保存文件 Ctrl+s
   inoremap <c-s> <Esc>:w<cr>
+  nnoremap <c-s> <Esc>:w<cr>
 
   " 恢复
   nmap U <c-r>
 
   "--普通模式下使用回车键，向下/向上 增加一行
-  nmap <CR> o<Esc>
-  nmap <S-Enter> O<Esc>
+  "nmap <CR> o<Esc>
+  "nmap <S-Enter> O<Esc>
 
   "--将 jj 和 jk 映射为 <Esc>, 快速退出插入模式
   imap jj <Esc>
@@ -263,6 +268,34 @@
 
   " <leader>键设置（本配置为空格键)
   let mapleader=' '
+
+  " ================================================================================================
+  " 👻👻👻 Which-Key 👻👻👻
+  " ================================================================================================
+  set which-key
+  set notimeout
+
+  " f: Find/Format ⭐️
+  let g:WhichKeyDesc_FindOrFormat = "<leader>f FindOrFormat"
+  let g:WhichKeyDesc_FindOrFormat_FindFile = "<leader>ff FindFile"
+  nmap <leader>ff <action>(GotoFile)
+  "
+  "let g:WhichKeyDesc_FindOrFormat_FindFileLocation = "<leader>fl FindFileLocation"
+  "nmap <leader>fl <action>(SelectInProjectView)
+  "
+  "let g:WhichKeyDesc_FindOrFormat_FindText = "<leader>ft FindText"
+  "nmap <leader>ft <action>(FindInPath)
+  "
+  "let g:WhichKeyDesc_FindOrFormat_Commands = "<leader>fc Commands"
+  "nmap <leader>fc <action>(GotoAction)
+  "
+  "let g:WhichKeyDesc_FindOrFormat_OpenedProject = "<leader>fp OpenedProject"
+  "nmap <leader>fp <action>(OpenProjectWindows)
+  "
+  "let g:WhichKeyDesc_FindOrFormat_Format = "<leader>fm Format"
+  "nmap <leader>fm <action>(ReformatCode) \| <action>(OptimizeImports)
+
+  nnoremap <leader>k <Esc>:echo 'test keymap'<cr>
 
   " ===================== Extract/提取 ========================
 
@@ -350,12 +383,39 @@
   " (vim自带的搜索)
   nnoremap / /
 
+  " 清除高亮
+  nnoremap <leader>nl :nohlsearch<cr>
+
   " ===================== easymotion 设置 ========================
   " easymotion 设置
   set easymotion
 
   " easymotion 设置 两字符搜索
   nmap <leader><leader>s <Plug>(easymotion-s2)
+
+  " ===================== 复制/粘贴 ========================
+
+  "========== p ==========
+
+  "从剪切板粘贴到下面行
+  nmap <leader>p "+p
+
+  "从剪切板粘贴到上面行
+  nmap <leader>P "+P
+
+  "在可视模式中：从剪切板粘贴到下面行
+  vmap <leader>p "+p
+
+  "在可视模式中：从剪切板粘贴到上面行
+  vmap <leader>P "+P
+
+  "========== y ==========
+
+  " 复制在可视模式下选中的文本 将 "+ 简化为 <leader>
+  vmap <leader>y "+y
+
+  " 复制整行文本 将 "+ 简化为 <leader>
+  nmap <leader>y "+yy
 
   " ===================== Run/运行 ========================
 
@@ -364,6 +424,21 @@
 
   " <S-F10> 运行当前文件
   nnoremap <Leader>ru :action Run<CR>
+
+  " ===================== 插件 ========================
+
+  " NERDTree 设置
+  " 开启/关闭文件树
+  nnoremap <leader>t :NERDTreeToggle<CR>
+
+  " 当前文件显示在文件树中
+  nnoremap <leader>v :NERDTreeFind<CR>
+
+  " ===================== 浏览快捷键 ========================
+
+  " javadoc <c-q>
+  nnoremap cq :action QuickJavaDoc<cr>
+
   ```
 
 ### IdeaVim-EasyMotion
