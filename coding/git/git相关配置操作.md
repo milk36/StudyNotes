@@ -1,4 +1,4 @@
-# github相关配置操作
+# git相关配置操作
 
 * [linux配置GitHub并简单的操作git](https://blog.csdn.net/Magic_Ninja/article/details/80640902)
 
@@ -68,3 +68,30 @@ git fetch --all #拉取所有更新，不同步；
 git reset --hard origin/master #本地代码同步线上最新版本(会覆盖本地所有与远程仓库上同名的文件)；
 git pull #再更新一次（其实也可以不用，第二步命令做过了其实）
 ```
+
+## git查询操作
+
+### 查看仓困容量
+
+`git count-objects -vH`
+
+即只统计添加到仓库的文件的大小，不包含.gitignore忽略的文件
+
+## commit message格式
+
+`<type>(<scope>): <subject>`
+
+* type用于说明 commit 的类别，只允许使用下面7个标识。
+
+  ```js
+  feat：新功能（feature）
+  fix：修补bug
+  docs：文档（documentation）
+  style： 格式（不影响代码运行的变动）
+  refactor：重构（即不是新增功能，也不是修改bug的代码变动）
+  test：增加测试
+  chore：构建过程或辅助工具的变动
+  ```
+
+* scope用于说明 commit 影响的范围，比如数据层、控制层、视图层等等，视项目不同而不同。
+* subject是 commit 目的的简短描述，不超过50个字符。
