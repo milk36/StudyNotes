@@ -32,11 +32,10 @@
   - unix 系统
 
     ```sh
-    curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
-    https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+    curl -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 
     #国内镜像加速
-    curl -fLo ~/.vim/autoload/plug.vim --create-dirs     https://raw.staticdn.net/junegunn/vim-plug/master/plug.vim
+    curl -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.staticdn.net/junegunn/vim-plug/master/plug.vim
     ```
 
 ### 插件推荐/查找
@@ -199,6 +198,12 @@
   sudo apt update
   sudo apt install vim
   vim --version
+  ```
+
+- [centos 7 升级 Vim 9.0](https://blog.csdn.net/Yvesx/article/details/127111021)
+
+  ```sh
+  git clone https://gitee.com/mirrors/vim.git
   ```
 
 ### 错误-E319:Sorry
